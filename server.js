@@ -1,12 +1,37 @@
-//TODO: integrate with MongoDB
+//import middlewares
+import { generateAuthToken } from './middlewares/generateAuthToken';
+import { User } from './models/User';
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const cors = require('cors');
+const morgan = require('morgan');
 
 const app = express();
-app.use(express.json())
+
+const dbUrl = "mongodb+srv://falestio:CmPK7yuFbCSjvqrf@cluster0.4k8vi.mongodb.net/pojokoding?retryWrites=true&w=majority"
+
+const options = {
+  keepAlive: 1,
+  connectTimeoutMS: 30000,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
+
+mongoose.connect(dbUrl, options)
+    .then(() => {
+        console.log('Connected to database!');
+    })
+    .catch((e) => {
+        console.log('Connection failed!', e);
+    });
+
+
+app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
+app.use(morgan('dev'));
 
 app.use((req, res, next) => {
     // Get auth token from the cookies
@@ -18,40 +43,8 @@ app.use((req, res, next) => {
     next();
 });
 
-const getHashedPassword = (password) => {
-    const sha256 = crypto.createHash('sha256');
-    const hash = sha256.update(password).digest('base64');
-    return hash;
-}
-
-const generateAuthToken = () => {
-    return crypto.randomBytes(30).toString('hex');
-}
-
-const requireAuth = (req, res, next) => {
-    if (req.user) {
-        next();
-    } else {
-        res.send({
-            message: 'Please login to continue',
-            messageClass: 'alert-danger'
-        });
-    }
-};
-
-const users = [
-    // This user is added to the array to avoid creating a new user on each restart
-    {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'johndoe@email.com',
-        // This is the SHA256 hash for value of `password`
-        password: 'XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg='
-    }
-];
-
 app.get("/users", (req, res) => {
-    res.send(users);
+    res.send(User);
 })
 
 app.post('/api/v1/register', (req, res) => {
