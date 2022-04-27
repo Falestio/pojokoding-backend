@@ -1,7 +1,10 @@
-//import middlewares
-import { generateAuthToken } from './middlewares/generateAuthToken';
-import { User } from './models/User';
+//*Import middlewares and models 
+const generateAuthToken =  require('./middlewares/generateAuthToken');
+const requireAuth = require('./middlewares/requireAuth');
+const User =  require('./models/User');
 
+//* Dependencies
+const mongoose = require('mongoose');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
@@ -13,7 +16,7 @@ const app = express();
 const dbUrl = "mongodb+srv://falestio:CmPK7yuFbCSjvqrf@cluster0.4k8vi.mongodb.net/pojokoding?retryWrites=true&w=majority"
 
 const options = {
-  keepAlive: 1,
+  keepAlive: true,
   connectTimeoutMS: 30000,
   useNewUrlParser: true,
   useUnifiedTopology: true,

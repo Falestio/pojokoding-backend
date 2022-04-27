@@ -1,4 +1,4 @@
-export const requireAuth = (req, res, next) => {
+const requireAuth = (req, res, next) => {
     if (req.user) {
         next();
     } else {
@@ -8,3 +8,5 @@ export const requireAuth = (req, res, next) => {
         });
     }
 };
+
+module.exports = requireAuth;
